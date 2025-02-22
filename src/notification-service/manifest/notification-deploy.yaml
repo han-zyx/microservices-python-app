@@ -5,14 +5,15 @@ metadata:
   labels:
     app: notification
 spec:
-  replicas: 2
+  replicas: 1  # One replica only
   selector:
     matchLabels:
       app: notification
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 8
+      maxSurge: 1  # Can be adjusted
+      maxUnavailable: 1  # Controls how many pods can be unavailable during the update
   template:
     metadata:
       labels:
@@ -20,9 +21,16 @@ spec:
     spec:
       containers:
         - name: notification
-          image: nasi101/notification
+          image: hansakatennakoon/notification
           envFrom:
             - configMapRef:
                 name: notification-configmap
             - secretRef:
                 name: notification-secret
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
